@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meal Plan Tracker</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #6b7280; --border: #e3e6eb;
+    --cut: #2f7de1; --cut-soft: #e6f0fc; --bulk: #d9772b; --bulk-soft: #fcefe3;
+    --danger: #d64545; --chip: #eef0f3; --chip-sel: #1d2330; --chip-sel-text: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171c; --card: #1d2128; --text: #e7e9ee; --muted: #9aa1ad; --border: #2e333c;
+      --cut: #5b9cf0; --cut-soft: #1d2a3d; --bulk: #ec9550; --bulk-soft: #3a2a1d;
+      --danger: #ef6b6b; --chip: #282d36; --chip-sel: #e7e9ee; --chip-sel-text: #14171c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         background: var(--bg); color: var(--text); line-height: 1.4; }
+  header { padding: 20px 16px 8px; max-width: 1200px; margin: 0 auto; }
+  header h1 { margin: 0; font-size: 1.5rem; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+  main { max-width: 1200px; margin: 0 auto; padding: 8px 16px 280px; }
+  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 860px) { .plans { grid-template-columns: 1fr; } }
+
+  .plan { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .plan-head { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+               padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .plan-head h2 { margin: 0; font-size: 1.2rem; }
+  .plan.cut .plan-head { border-top: 4px solid var(--cut); }
+  .plan.bulk .plan-head { border-top: 4px solid var(--bulk); }
+  .plan-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); }
+  .totals div { background: var(--card); padding: 8px 10px; }
+  .plan.cut .totals div { background: var(--cut-soft); }
+  .plan.bulk .totals div { background: var(--bulk-soft); }
+  .totals .label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .totals .val { font-size: 1.1rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .totals .cal .val { font-size: 1.35rem; }
+
+  .meal { padding: 10px 16px; border-top: 1px solid var(--border); }
+  .meal-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .meal h3 { margin: 0 0 4px; font-size: .95rem; }
+  .meal-cal { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .meal ul { list-style: none; margin: 0; padding: 0; }
+  .meal li { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: .9rem; }
+  .meal li .name { flex: 1; min-width: 0; }
+  .meal li .macros { color: var(--muted); font-size: .78rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .meal .empty { color: var(--muted); font-size: .85rem; font-style: italic; padding: 4px 0; }
+  @media (max-width: 480px) { .meal li .macros { display: none; } }
+
+  button, select { font: inherit; font-size: .85rem; border-radius: 8px; border: 1px solid var(--border);
+                   background: var(--card); color: var(--text); padding: 5px 10px; cursor: pointer; }
+  button:hover { filter: brightness(0.96); }
+  .remove { border: none; background: transparent; color: var(--danger); font-size: 1.1rem;
+            line-height: 1; padding: 2px 6px; }
+  .remove:hover { background: var(--chip); }
+
+  /* Food bank */
+  .bank { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card);
+          border-top: 1px solid var(--border); box-shadow: 0 -4px 16px rgba(0,0,0,.08); z-index: 10; }
+  .bank-inner { max-width: 1200px; margin: 0 auto; padding: 10px 16px 14px; }
+  .bank-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .bank h2 { margin: 0; font-size: 1rem; }
+  .bank input[type=search] { font: inherit; font-size: .85rem; padding: 5px 10px; border-radius: 8px;
+         border: 1px solid var(--border); background: var(--bg); color: var(--text); width: 200px; max-width: 100%; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; max-height: 110px; overflow-y: auto; }
+  .chip { background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 4px 11px; font-size: .82rem; }
+  .chip.selected { background: var(--chip-sel); color: var(--chip-sel-text); }
+  .add-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+             padding-top: 10px; border-top: 1px dashed var(--border); font-size: .85rem; }
+  .add-bar .info { flex: 1 1 260px; color: var(--muted); }
+  .add-bar .info strong { color: var(--text); }
+  .btn-cut { background: var(--cut); color: #fff; border-color: var(--cut); }
+  .btn-bulk { background: var(--bulk); color: #fff; border-color: var(--bulk); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Meal Plan Tracker</h1>
+  <p>Remove foods with ✕. Pick a food from the food bank below to add it to a meal — daily totals update automatically.</p>
+</header>
+
+<main>
+  <div class="plans">
+    <section class="plan cut" id="plan-Cut"></section>
+    <section class="plan bulk" id="plan-Bulk"></section>
+  </div>
+</main>
+
+<div class="bank">
+  <div class="bank-inner">
+    <div class="bank-top">
+      <h2>Food bank</h2>
+      <input type="search" id="bank-search" placeholder="Search foods…" aria-label="Search foods">
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="add-bar">
+      <div class="info" id="sel-info">Select a food above.</div>
+      <label>Meal
+        <select id="meal-select"></select>
+      </label>
+      <button class="btn-cut" id="add-cut" disabled>Add to Cut</button>
+      <button class="btn-bulk" id="add-bulk" disabled>Add to Bulk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Source data: cut_bulk_nutrition.csv (embedded so the page works when opened directly) -->
+<script type="text/csv" id="csv-data">
+Plan,Meal,Dinner Option,Item,Calories,Carbs (g),Fat (g),Protein (g),Sodium (mg),Sugar (g),Fiber (g),Cholesterol (mg)
+Cut,Breakfast,All,2 egg whites,34,0.5,0.1,7.2,110,0.5,0,0
+Cut,Breakfast,All,1/2 cup unsweetened vanilla almond milk,15,0.5,1.3,0.5,85,0,0,0
+Cut,Breakfast,All,1 scoop ISO protein powder,110,2,0.5,25,160,1,0,5
+Cut,Breakfast,All,1 chicken breast (6 oz cooked),280,0,6,53,126,0,0,144
+Cut,Morning Snack,All,20 peanuts (unsalted),117,4.3,9.9,4.9,1,1,1.6,0
+Cut,Lunch,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Cut,Lunch,All,3 cups lettuce (romaine),24,4.7,0.4,1.7,11,1.7,3,0
+Cut,Lunch,All,6 oz tilapia,218,0,4.5,44.5,95,0,0,97
+Cut,Afternoon Snack,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Cut,Afternoon Snack,All,3 cups lettuce (romaine),24,4.7,0.4,1.7,11,1.7,3,0
+Cut,Afternoon Snack,All,6 oz chicken breast,280,0,6,53,126,0,0,144
+Cut,Afternoon Snack,All,20 peanuts (unsalted),117,4.3,9.9,4.9,1,1,1.6,0
+Cut,Dinner,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Cut,Dinner,All,3 cups lettuce (romaine),24,4.7,0.4,1.7,11,1.7,3,0
+Cut,Dinner,All,6 oz chicken breast,280,0,6,53,126,0,0,144
+Cut,Evening Snack,All,1 tbsp almond butter,98,3,8.9,3.4,1,0.7,1.6,0
+Cut,Evening Snack,All,1 tbsp apple cider vinegar,3,0.1,0,0,1,0.1,0,0
+Cut,DAILY TOTAL,All,Cut day total,1633,31.8,54.3,254.5,865,10.6,13.8,534
+Bulk,Breakfast,All,10 blueberries,8,2,0,0.1,0,1.4,0.3,0
+Bulk,Breakfast,All,1 scoop ISO protein powder,110,2,0.5,25,160,1,0,5
+Bulk,Breakfast,All,1 cup unsweetened vanilla almond milk,30,1,2.5,1,170,0,0,0
+Bulk,Breakfast,All,2 hard-boiled eggs,156,1.1,10.6,12.6,124,1.1,0,373
+Bulk,Breakfast,All,1/2 cup oats (dry),150,27,3,5,0,1,4,0
+Bulk,Breakfast,All,1 packet French vanilla creamer,35,5,1.5,0,5,5,0,0
+Bulk,Breakfast,All,1 chicken breast (6 oz cooked),280,0,6,53,126,0,0,144
+Bulk,Morning Snack,All,20 peanuts (unsalted),117,4.3,9.9,4.9,1,1,1.6,0
+Bulk,Morning Snack,All,1 medium pear,101,27,0.3,0.6,2,17,5.5,0
+Bulk,Lunch,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Bulk,Lunch,All,2 cups lettuce (romaine),16,3.1,0.3,1.2,8,1.1,2,0
+Bulk,Lunch,All,3 cherry tomatoes,9,2,0.1,0.4,3,1.3,0.6,0
+Bulk,Lunch,All,1/5 cucumber,9,2.2,0.1,0.4,1,1,0.3,0
+Bulk,Lunch,All,1 can light tuna in water (drained),100,0,1,22,280,0,0,35
+Bulk,Lunch,All,1/4 cup chickpeas,55,9,1,3,90,1,2.5,0
+Bulk,Lunch,All,1/4 cup beets,19,4.3,0.1,0.7,33,3.4,0.9,0
+Bulk,Lunch,All,1/4 avocado,80,4.3,7.4,1,4,0.3,3.4,0
+Bulk,Afternoon Snack,All,1 medium banana,105,27,0.4,1.3,1,14.4,3.1,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),1/2 can Olipop,18,8.5,0,0,20,2,4.5,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),1/2 cup mujaddara (homemade),150,22,4.5,5.5,200,1.5,4,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),1 cup broccoli,55,11.2,0.6,3.7,64,2.2,5.1,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),6 oz chicken breast,280,0,6,53,126,0,0,144
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),1/2 can Olipop,18,8.5,0,0,20,2,4.5,0
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),1/2 cup couscous (cooked),88,18,0.1,3,4,0.1,1.1,0
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),1 cup corn,143,31,2,5,2,7,3.6,0
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),6 oz catfish (baked),245,0,13,31,120,0,0,112
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),1/2 can Olipop,18,8.5,0,0,20,2,4.5,0
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),1/2 cup quinoa (cooked),111,19.7,1.8,4.1,7,0.8,2.6,0
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),1 cup green beans,44,9.9,0.4,2.4,1,2,4,0
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),6 oz tilapia,218,0,4.5,44.5,95,0,0,97
+Bulk,Evening Snack,All,1 tbsp dark chocolate chips,70,9,4,1,2,8,1,0
+Bulk,Evening Snack,All,1 tbsp peanuts,53,1.9,4.5,2.2,1,0.4,0.7,0
+Bulk,DAILY TOTAL,Option 1 (Mujaddara/Broccoli/Chicken),Bulk day total - Option 1,2009,174.9,64.3,197.6,1421,64.5,39.5,701
+Bulk,DAILY TOTAL,Option 2 (Couscous/Corn/Catfish),Bulk day total - Option 2,2000,190.7,68.3,174.4,1157,67.9,35.1,669
+Bulk,DAILY TOTAL,Option 3 (Quinoa/Green Beans/Tilapia),Bulk day total - Option 3,1897,171.3,59.9,186.4,1134,63.6,37,654
+</script>
+
+<script>
+const NUTRIENTS = [
+  { key: "Calories", label: "Calories", unit: "" },
+  { key: "Protein (g)", label: "Protein", unit: "g" },
+  { key: "Carbs (g)", label: "Carbs", unit: "g" },
+  { key: "Fat (g)", label: "Fat", unit: "g" },
+  { key: "Sugar (g)", label: "Sugar", unit: "g" },
+  { key: "Fiber (g)", label: "Fiber", unit: "g" },
+  { key: "Sodium (mg)", label: "Sodium", unit: "mg" },
+  { key: "Cholesterol (mg)", label: "Cholesterol", unit: "mg" },
+];
+const PLANS = ["Cut", "Bulk"];
+const STORAGE_KEY = "mealplan-state-v1";
+
+// ---- Parse CSV ----
+const lines = document.getElementById("csv-data").textContent.trim().split(/\r?\n/);
+const headers = lines[0].split(",");
+const rows = lines.slice(1).map(line => {
+  const cells = line.split(",");
+  const row = {};
+  headers.forEach((h, i) => {
+    row[h] = i >= 4 ? parseFloat(cells[i]) || 0 : cells[i];
+  });
+  return row;
+}).filter(r => r.Meal !== "DAILY TOTAL");
+
+// Meals in the order they first appear
+const MEALS = [...new Set(rows.map(r => r.Meal))];
+
+// Food bank: unique foods by name
+const FOODS = {};
+rows.forEach(r => {
+  if (!FOODS[r.Item]) {
+    const f = { name: r.Item };
+    NUTRIENTS.forEach(n => f[n.key] = r[n.key]);
+    FOODS[r.Item] = f;
+  }
+});
+const FOOD_NAMES = Object.keys(FOODS).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+// Bulk dinner options from the CSV
+const DINNER_OPTIONS = [...new Set(rows.filter(r => r.Plan === "Bulk" && r["Dinner Option"] !== "All")
+                                      .map(r => r["Dinner Option"]))];
+
+function defaultPlan(plan, dinnerOption) {
+  return rows
+    .filter(r => r.Plan === plan &&
+      (r["Dinner Option"] === "All" || r["Dinner Option"] === (dinnerOption || DINNER_OPTIONS[0])))
+    .map(r => ({ meal: r.Meal, name: r.Item }));
+}
+
+// ---- State ----
+let state;
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && saved.Cut && saved.Bulk) {
+      // Drop entries whose food no longer exists in the data
+      PLANS.forEach(p => saved[p] = saved[p].filter(e => FOODS[e.name] && MEALS.includes(e.meal)));
+      return saved;
+    }
+  } catch (e) {}
+  return { Cut: defaultPlan("Cut"), Bulk: defaultPlan("Bulk") };
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+state = loadState();
+
+// ---- Helpers ----
+const fmt = v => (Math.round(v * 10) / 10).toLocaleString();
+function sum(entries) {
+  const t = {};
+  NUTRIENTS.forEach(n => t[n.key] = 0);
+  entries.forEach(e => NUTRIENTS.forEach(n => t[n.key] += FOODS[e.name][n.key]));
+  return t;
+}
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === "class") node.className = v;
+    else if (k.startsWith("on")) node.addEventListener(k.slice(2), v);
+    else node.setAttribute(k, v);
+  });
+  children.flat().forEach(c => node.append(c));
+  return node;
+}
+
+// ---- Render plans ----
+function renderPlan(plan) {
+  const root = document.getElementById("plan-" + plan);
+  root.innerHTML = "";
+  const entries = state[plan];
+  const totals = sum(entries);
+
+  // Header with reset
+  const actions = el("div", { class: "plan-actions" });
+  if (plan === "Bulk" && DINNER_OPTIONS.length) {
+    const sel = el("select", { "aria-label": "Dinner option to reset to" },
+      DINNER_OPTIONS.map(o => el("option", { value: o }, o.replace(/\s*\(.*\)/, "") + " – " + (o.match(/\((.*)\)/) || [,""])[1])));
+    actions.append(sel, el("button", { onclick: () => resetPlan(plan, sel.value) }, "Reset to plan"));
+  } else {
+    actions.append(el("button", { onclick: () => resetPlan(plan) }, "Reset to plan"));
+  }
+  actions.append(el("button", { onclick: () => clearPlan(plan) }, "Clear"));
+  root.append(el("div", { class: "plan-head" }, el("h2", {}, plan), actions));
+
+  // Daily totals
+  root.append(el("div", { class: "totals" },
+    NUTRIENTS.map(n => el("div", { class: n.key === "Calories" ? "cal" : "" },
+      el("div", { class: "label" }, n.label),
+      el("div", { class: "val" }, fmt(totals[n.key]) + (n.unit ? " " + n.unit : ""))))));
+
+  // Meals
+  MEALS.forEach(meal => {
+    const items = entries.map((e, i) => ({ ...e, i })).filter(e => e.meal === meal);
+    const mealCal = sum(items)["Calories"];
+    const list = items.length
+      ? el("ul", {}, items.map(e => {
+          const f = FOODS[e.name];
+          return el("li", {},
+            el("span", { class: "name" }, e.name),
+            el("span", { class: "macros" },
+              `${fmt(f["Calories"])} cal · P ${fmt(f["Protein (g)"])} · C ${fmt(f["Carbs (g)"])} · F ${fmt(f["Fat (g)"])}`),
+            el("button", { class: "remove", title: "Remove", "aria-label": "Remove " + e.name,
+                           onclick: () => removeFood(plan, e.i) }, "✕"));
+        }))
+      : el("div", { class: "empty" }, "No foods");
+    root.append(el("div", { class: "meal" },
+      el("div", { class: "meal-head" }, el("h3", {}, meal), el("span", { class: "meal-cal" }, fmt(mealCal) + " cal")),
+      list));
+  });
+}
+function renderAll() { PLANS.forEach(renderPlan); saveState(); }
+
+function removeFood(plan, index) { state[plan].splice(index, 1); renderAll(); }
+function resetPlan(plan, option) { state[plan] = defaultPlan(plan, option); renderAll(); }
+function clearPlan(plan) {
+  if (confirm(`Remove all foods from ${plan}?`)) { state[plan] = []; renderAll(); }
+}
+function addFood(plan, name, meal) {
+  // Insert after the last entry of the same meal so meals stay grouped in order
+  let idx = -1;
+  state[plan].forEach((e, i) => { if (e.meal === meal) idx = i; });
+  if (idx === -1) state[plan].push({ meal, name });
+  else state[plan].splice(idx + 1, 0, { meal, name });
+  renderAll();
+}
+
+// ---- Food bank ----
+let selected = null;
+const chipsEl = document.getElementById("chips");
+const searchEl = document.getElementById("bank-search");
+const mealSel = document.getElementById("meal-select");
+const infoEl = document.getElementById("sel-info");
+const addCut = document.getElementById("add-cut");
+const addBulk = document.getElementById("add-bulk");
+
+MEALS.forEach(m => mealSel.append(el("option", { value: m }, m)));
+
+function renderChips() {
+  const q = searchEl.value.trim().toLowerCase();
+  chipsEl.innerHTML = "";
+  FOOD_NAMES.filter(n => n.toLowerCase().includes(q)).forEach(name => {
+    chipsEl.append(el("button", {
+      class: "chip" + (name === selected ? " selected" : ""),
+      "aria-pressed": name === selected ? "true" : "false",
+      onclick: () => { selected = selected === name ? null : name; renderChips(); renderSelection(); }
+    }, name));
+  });
+}
+function renderSelection() {
+  addCut.disabled = addBulk.disabled = !selected;
+  if (!selected) { infoEl.textContent = "Select a food above."; return; }
+  const f = FOODS[selected];
+  infoEl.innerHTML = "";
+  infoEl.append(el("strong", {}, selected), " — " +
+    NUTRIENTS.map(n => `${n.label} ${fmt(f[n.key])}${n.unit}`).join(" · "));
+}
+searchEl.addEventListener("input", renderChips);
+addCut.addEventListener("click", () => selected && addFood("Cut", selected, mealSel.value));
+addBulk.addEventListener("click", () => selected && addFood("Bulk", selected, mealSel.value));
+
+renderAll();
+renderChips();
+renderSelection();
+</script>
+</body>
+</html>

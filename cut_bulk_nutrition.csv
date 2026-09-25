@@ -1,0 +1,54 @@
+Plan,Meal,Dinner Option,Item,Calories,Carbs (g),Fat (g),Protein (g),Sodium (mg),Sugar (g),Fiber (g),Cholesterol (mg)
+Cut,Breakfast,All,2 egg whites,34,0.5,0.1,7.2,110,0.5,0,0
+Cut,Breakfast,All,1/2 cup unsweetened vanilla almond milk,15,0.5,1.3,0.5,85,0,0,0
+Cut,Breakfast,All,1 scoop ISO protein powder,110,2,0.5,25,160,1,0,5
+Cut,Breakfast,All,1 chicken breast (6 oz cooked),280,0,6,53,126,0,0,144
+Cut,Morning Snack,All,20 peanuts (unsalted),117,4.3,9.9,4.9,1,1,1.6,0
+Cut,Lunch,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Cut,Lunch,All,3 cups lettuce (romaine),24,4.7,0.4,1.7,11,1.7,3,0
+Cut,Lunch,All,6 oz tilapia,218,0,4.5,44.5,95,0,0,97
+Cut,Afternoon Snack,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Cut,Afternoon Snack,All,3 cups lettuce (romaine),24,4.7,0.4,1.7,11,1.7,3,0
+Cut,Afternoon Snack,All,6 oz chicken breast,280,0,6,53,126,0,0,144
+Cut,Afternoon Snack,All,20 peanuts (unsalted),117,4.3,9.9,4.9,1,1,1.6,0
+Cut,Dinner,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Cut,Dinner,All,3 cups lettuce (romaine),24,4.7,0.4,1.7,11,1.7,3,0
+Cut,Dinner,All,6 oz chicken breast,280,0,6,53,126,0,0,144
+Cut,Evening Snack,All,1 tbsp almond butter,98,3,8.9,3.4,1,0.7,1.6,0
+Cut,Evening Snack,All,1 tbsp apple cider vinegar,3,0.1,0,0,1,0.1,0,0
+Cut,DAILY TOTAL,All,Cut day total,1633,31.8,54.3,254.5,865,10.6,13.8,534
+Bulk,Breakfast,All,10 blueberries,8,2,0,0.1,0,1.4,0.3,0
+Bulk,Breakfast,All,1 scoop ISO protein powder,110,2,0.5,25,160,1,0,5
+Bulk,Breakfast,All,1 cup unsweetened vanilla almond milk,30,1,2.5,1,170,0,0,0
+Bulk,Breakfast,All,2 hard-boiled eggs,156,1.1,10.6,12.6,124,1.1,0,373
+Bulk,Breakfast,All,1/2 cup oats (dry),150,27,3,5,0,1,4,0
+Bulk,Breakfast,All,1 packet French vanilla creamer,35,5,1.5,0,5,5,0,0
+Bulk,Breakfast,All,1 chicken breast (6 oz cooked),280,0,6,53,126,0,0,144
+Bulk,Morning Snack,All,20 peanuts (unsalted),117,4.3,9.9,4.9,1,1,1.6,0
+Bulk,Morning Snack,All,1 medium pear,101,27,0.3,0.6,2,17,5.5,0
+Bulk,Lunch,All,1 cup lemon water,3,1,0,0,0,0.4,0,0
+Bulk,Lunch,All,2 cups lettuce (romaine),16,3.1,0.3,1.2,8,1.1,2,0
+Bulk,Lunch,All,3 cherry tomatoes,9,2,0.1,0.4,3,1.3,0.6,0
+Bulk,Lunch,All,1/5 cucumber,9,2.2,0.1,0.4,1,1,0.3,0
+Bulk,Lunch,All,1 can light tuna in water (drained),100,0,1,22,280,0,0,35
+Bulk,Lunch,All,1/4 cup chickpeas,55,9,1,3,90,1,2.5,0
+Bulk,Lunch,All,1/4 cup beets,19,4.3,0.1,0.7,33,3.4,0.9,0
+Bulk,Lunch,All,1/4 avocado,80,4.3,7.4,1,4,0.3,3.4,0
+Bulk,Afternoon Snack,All,1 medium banana,105,27,0.4,1.3,1,14.4,3.1,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),1/2 can Olipop,18,8.5,0,0,20,2,4.5,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),1/2 cup mujaddara (homemade),150,22,4.5,5.5,200,1.5,4,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),1 cup broccoli,55,11.2,0.6,3.7,64,2.2,5.1,0
+Bulk,Dinner,Option 1 (Mujaddara/Broccoli/Chicken),6 oz chicken breast,280,0,6,53,126,0,0,144
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),1/2 can Olipop,18,8.5,0,0,20,2,4.5,0
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),1/2 cup couscous (cooked),88,18,0.1,3,4,0.1,1.1,0
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),1 cup corn,143,31,2,5,2,7,3.6,0
+Bulk,Dinner,Option 2 (Couscous/Corn/Catfish),6 oz catfish (baked),245,0,13,31,120,0,0,112
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),1/2 can Olipop,18,8.5,0,0,20,2,4.5,0
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),1/2 cup quinoa (cooked),111,19.7,1.8,4.1,7,0.8,2.6,0
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),1 cup green beans,44,9.9,0.4,2.4,1,2,4,0
+Bulk,Dinner,Option 3 (Quinoa/Green Beans/Tilapia),6 oz tilapia,218,0,4.5,44.5,95,0,0,97
+Bulk,Evening Snack,All,1 tbsp dark chocolate chips,70,9,4,1,2,8,1,0
+Bulk,Evening Snack,All,1 tbsp peanuts,53,1.9,4.5,2.2,1,0.4,0.7,0
+Bulk,DAILY TOTAL,Option 1 (Mujaddara/Broccoli/Chicken),Bulk day total - Option 1,2009,174.9,64.3,197.6,1421,64.5,39.5,701
+Bulk,DAILY TOTAL,Option 2 (Couscous/Corn/Catfish),Bulk day total - Option 2,2000,190.7,68.3,174.4,1157,67.9,35.1,669
+Bulk,DAILY TOTAL,Option 3 (Quinoa/Green Beans/Tilapia),Bulk day total - Option 3,1897,171.3,59.9,186.4,1134,63.6,37,654
